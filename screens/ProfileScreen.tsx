@@ -83,29 +83,31 @@ export default function ProfileScreen() {
       </TouchableOpacity>
 
       <View style={styles.detailsContainer}>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Name</Text>
-          <Text style={styles.detailValue}>{profile.name || 'Not set'}</Text>
-          <TouchableOpacity onPress={() => startEditing('name')}>
-            <Ionicons name="create-outline" size={20} color={darkViolet} />
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Email</Text>
-          <Text style={styles.detailValue}>{profile.email || 'Not set'}</Text>
-          <TouchableOpacity onPress={() => startEditing('email')}>
-            <Ionicons name="create-outline" size={20} color={darkViolet} />
-          </TouchableOpacity>
-        </View>
+<View style={styles.detailRow}>
+  <Text style={styles.detailLabel}>Name</Text>
+  <Text style={styles.detailValue}>{profile.name || 'Not set'}</Text>
+  <TouchableOpacity onPress={() => startEditing('name')} style={styles.editButton}>
+    <Text style={styles.editButtonText}>Edit</Text>
+  </TouchableOpacity>
+</View>
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Message</Text>
-          <Text style={styles.detailValue}>{profile.bio || 'Not set'}</Text>
-          <TouchableOpacity onPress={() => startEditing('bio')}>
-            <Ionicons name="create-outline" size={20} color={darkViolet} />
-          </TouchableOpacity>
-        </View>
+<View style={styles.detailRow}>
+  <Text style={styles.detailLabel}>Email</Text>
+  <Text style={styles.detailValue}>{profile.email || 'Not set'}</Text>
+  <TouchableOpacity onPress={() => startEditing('email')} style={styles.editButton}>
+    <Text style={styles.editButtonText}>Edit</Text>
+  </TouchableOpacity>
+</View>
+
+<View style={styles.detailRow}>
+  <Text style={styles.detailLabel}>Message</Text>
+  <Text style={styles.detailValue}>{profile.bio || 'Not set'}</Text>
+  <TouchableOpacity onPress={() => startEditing('bio')} style={styles.editButton}>
+    <Text style={styles.editButtonText}>Edit</Text>
+  </TouchableOpacity>
+</View>
+
       </View>
 
       <Modal visible={modalVisible} transparent animationType="slide">
@@ -121,11 +123,12 @@ export default function ProfileScreen() {
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.saveButton, { backgroundColor: '#ccc', marginTop: 10 }]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.saveButtonText}>Cancel</Text>
-            </TouchableOpacity>
+  style={[styles.saveButton, styles.cancelButton]}
+  onPress={() => setModalVisible(false)}
+>
+  <Text style={styles.saveButtonText}>Cancel</Text>
+</TouchableOpacity>
+
           </View>
         </View>
       </Modal>
@@ -200,4 +203,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  editButton: {
+  backgroundColor: darkViolet,
+  paddingVertical: 4,
+  paddingHorizontal: 12,
+  borderRadius: 6,
+},
+editButtonText: {
+  color: 'white',
+  fontWeight: '600',
+  fontSize: 14,
+},
+cancelButton: {
+  backgroundColor: '#ccc',
+  marginTop: 10,
+},
+
+
 });

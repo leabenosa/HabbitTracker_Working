@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { Habit, HabitStatus, loadHabits, saveHabits } from '../storage/habitStorage';
+import { Habit, loadHabits, saveHabits } from '../storage/habitStorage';
 import { useIsFocused } from '@react-navigation/native';
 
 function formatIso(date: Date) {
@@ -38,6 +38,47 @@ function getCurrentWeekDates() {
   return days;
 }
 
+// Extracted component for each done habit item
+function DoneItem({
+  item,
+  onDelete,
+}: {
+  item: Habit;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <View style={styles.item}>
+      <Text style={styles.habitText}>{item.name}</Text>
+      <TouchableOpacity
+        style={styles.revertButton}
+        onPress={() => onDelete(item.id)}
+      >
+        <Text style={styles.revertText}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// Extracted component for footer with Delete All button
+function DoneFooter({
+  onDeleteAll,
+  visible,
+}: {
+  onDeleteAll: () => void;
+  visible: boolean;
+}) {
+  if (!visible) return null;
+  return (
+    <TouchableOpacity
+      style={styles.deleteAllButton}
+      onPress={onDeleteAll}
+      activeOpacity={0.7}
+    >
+      <Text style={styles.deleteAllButtonText}>Delete All</Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function DoneScreen() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -53,7 +94,6 @@ export default function DoneScreen() {
     }
   }, [isFocused]);
 
-  
   useEffect(() => {
     const interval = setInterval(() => setCurrentDate(new Date()), 60000);
     return () => clearInterval(interval);
@@ -69,7 +109,7 @@ export default function DoneScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            const filtered = habits.filter(h => h.id !== id);
+            const filtered = habits.filter((h) => h.id !== id);
             await saveHabits(filtered);
             setHabits(filtered);
           },
@@ -81,7 +121,9 @@ export default function DoneScreen() {
   const deleteAllDoneForDate = () => {
     Alert.alert(
       'Delete All Done Habits',
-      `Are you sure you want to delete ALL done habits for ${formatIso(selectedDate)}?`,
+      `Are you sure you want to delete ALL done habits for ${formatIso(
+        selectedDate
+      )}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -89,7 +131,7 @@ export default function DoneScreen() {
           style: 'destructive',
           onPress: async () => {
             const filtered = habits.filter(
-              h => !(h.date === formatIso(selectedDate) && h.status === 'done')
+              (h) => !(h.date === formatIso(selectedDate) && h.status === 'done')
             );
             await saveHabits(filtered);
             setHabits(filtered);
@@ -102,19 +144,18 @@ export default function DoneScreen() {
   const weekDays = getCurrentWeekDates();
 
   const doneForDate = habits.filter(
-    h => h.date === formatIso(selectedDate) && h.status === 'done'
+    (h) => h.date === formatIso(selectedDate) && h.status === 'done'
   );
 
   const formattedToday = formatDisplayDate(currentDate);
 
   return (
     <View style={styles.container}>
-
       {/* Current Date display */}
       <Text style={styles.currentDate}>{formattedToday}</Text>
 
       <View style={styles.weekRow}>
-        {weekDays.map(day => {
+        {weekDays.map((day) => {
           const iso = formatIso(day);
           const isSelected = iso === formatIso(selectedDate);
           return (
@@ -123,10 +164,14 @@ export default function DoneScreen() {
               style={[styles.dayBox, isSelected && styles.daySelected]}
               onPress={() => setSelectedDate(day)}
             >
-              <Text style={[styles.dayText, isSelected && styles.dayTextSelected]}>
+              <Text
+                style={[styles.dayText, isSelected && styles.dayTextSelected]}
+              >
                 {day.toLocaleDateString(undefined, { weekday: 'short' })}
               </Text>
-              <Text style={[styles.dateText, isSelected && styles.dayTextSelected]}>
+              <Text
+                style={[styles.dateText, isSelected && styles.dayTextSelected]}
+              >
                 {day.getDate()}
               </Text>
             </TouchableOpacity>
@@ -138,29 +183,18 @@ export default function DoneScreen() {
 
       <FlatList
         data={doneForDate}
-        keyExtractor={item => item.id}
-        ListEmptyComponent={<Text style={styles.empty}>No done habits for this date</Text>}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <Text style={styles.empty}>No done habits for this date</Text>
+        }
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.habitText}>{item.name}</Text>
-            <TouchableOpacity
-              style={styles.revertButton}
-              onPress={() => deleteHabit(item.id)}
-            >
-              <Text style={styles.revertText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
+          <DoneItem item={item} onDelete={deleteHabit} />
         )}
-        ListFooterComponent={() =>
-          doneForDate.length > 0 ? (
-            <TouchableOpacity
-              style={styles.deleteAllButton}
-              onPress={deleteAllDoneForDate}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.deleteAllButtonText}>Delete All</Text>
-            </TouchableOpacity>
-          ) : null
+        ListFooterComponent={
+          <DoneFooter
+            onDeleteAll={deleteAllDoneForDate}
+            visible={doneForDate.length > 0}
+          />
         }
       />
     </View>
@@ -173,10 +207,10 @@ const backgroundViolet = '#f3e5f5';
 const redColor = '#e53935';
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     padding: 20,
-    backgroundColor: backgroundViolet 
+    backgroundColor: backgroundViolet,
   },
   currentDate: {
     fontSize: 16,
@@ -185,65 +219,65 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-  weekRow: { 
+  weekRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16 
+    marginBottom: 16,
   },
-  dayBox: { 
+  dayBox: {
     alignItems: 'center',
-    paddingVertical: 6, 
-    paddingHorizontal: 8, 
-    borderRadius: 8, 
-    backgroundColor: '#e1bee7' 
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    backgroundColor: '#e1bee7',
   },
-  daySelected: { 
-    backgroundColor: darkViolet 
+  daySelected: {
+    backgroundColor: darkViolet,
   },
-  dayText: { 
+  dayText: {
     fontSize: 12,
     color: darkViolet,
-    fontWeight: 'bold' 
-  },
-  dateText: { 
-    fontSize: 14, 
-    color: darkViolet 
-  },
-  dayTextSelected: { 
-    color: '#fff' 
-  },
-  title: { 
-    fontSize: 18, 
     fontWeight: 'bold',
-    marginBottom: 10, 
-    color: '#311b92' 
   },
-  empty: { 
-    textAlign: 'center', 
-    marginTop: 20, 
-    color: '#311b92' 
+  dateText: {
+    fontSize: 14,
+    color: darkViolet,
   },
-  item: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    paddingVertical: 10, 
-    borderBottomWidth: 1, 
-    borderColor: lightViolet 
+  dayTextSelected: {
+    color: '#fff',
   },
-  habitText: { 
-    fontSize: 14, 
-    color: '#311b92' 
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#311b92',
+  },
+  empty: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#311b92',
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: lightViolet,
+  },
+  habitText: {
+    fontSize: 14,
+    color: '#311b92',
   },
   revertButton: {
-    backgroundColor: '#7f8c8d', 
-    paddingVertical: 6, 
+    backgroundColor: '#7f8c8d',
+    paddingVertical: 6,
     paddingHorizontal: 10,
-    borderRadius: 8 
+    borderRadius: 8,
   },
-  revertText: { 
+  revertText: {
     color: '#fff',
-    fontWeight: '600' 
+    fontWeight: '600',
   },
   deleteAllButton: {
     backgroundColor: redColor,
@@ -251,8 +285,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginTop: 20,
     alignItems: 'center',
-    width: 140,          
-    alignSelf: 'center', 
+    width: 140,
+    alignSelf: 'center',
   },
   deleteAllButtonText: {
     color: '#fff',
