@@ -11,7 +11,11 @@ import { Habit, loadHabits, saveHabits } from '../storage/habitStorage';
 import { useIsFocused } from '@react-navigation/native';
 
 function formatIso(date: Date) {
-  return date.toISOString().split('T')[0];
+  // Return local date string yyyy-mm-dd
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function formatDisplayDate(date: Date) {
@@ -38,7 +42,6 @@ function getCurrentWeekDates() {
   return days;
 }
 
-// Extracted component for each done habit item
 function DoneItem({
   item,
   onDelete,
@@ -59,7 +62,6 @@ function DoneItem({
   );
 }
 
-// Extracted component for footer with Delete All button
 function DoneFooter({
   onDeleteAll,
   visible,
@@ -151,7 +153,6 @@ export default function DoneScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Current Date display */}
       <Text style={styles.currentDate}>{formattedToday}</Text>
 
       <View style={styles.weekRow}>

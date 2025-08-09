@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type Profile = {
   name: string;
@@ -76,37 +75,37 @@ export default function ProfileScreen() {
         {profile.imageUri ? (
           <Image source={{ uri: profile.imageUri }} style={styles.image} />
         ) : (
-          <View style={[styles.image, styles.placeholder]}>
-            <Ionicons name="camera" size={30} color="#fff" />
+          <View style={[styles.image, styles.placeholder, styles.changeImageContainer]}>
+            <Text style={styles.changeImageText}>Edit Image</Text>
           </View>
         )}
       </TouchableOpacity>
 
       <View style={styles.detailsContainer}>
 
-<View style={styles.detailRow}>
-  <Text style={styles.detailLabel}>Name</Text>
-  <Text style={styles.detailValue}>{profile.name || 'Not set'}</Text>
-  <TouchableOpacity onPress={() => startEditing('name')} style={styles.editButton}>
-    <Text style={styles.editButtonText}>Edit</Text>
-  </TouchableOpacity>
-</View>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Name</Text>
+          <Text style={styles.detailValue}>{profile.name || 'Not set'}</Text>
+          <TouchableOpacity onPress={() => startEditing('name')} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
 
-<View style={styles.detailRow}>
-  <Text style={styles.detailLabel}>Email</Text>
-  <Text style={styles.detailValue}>{profile.email || 'Not set'}</Text>
-  <TouchableOpacity onPress={() => startEditing('email')} style={styles.editButton}>
-    <Text style={styles.editButtonText}>Edit</Text>
-  </TouchableOpacity>
-</View>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Email</Text>
+          <Text style={styles.detailValue}>{profile.email || 'Not set'}</Text>
+          <TouchableOpacity onPress={() => startEditing('email')} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
 
-<View style={styles.detailRow}>
-  <Text style={styles.detailLabel}>Message</Text>
-  <Text style={styles.detailValue}>{profile.bio || 'Not set'}</Text>
-  <TouchableOpacity onPress={() => startEditing('bio')} style={styles.editButton}>
-    <Text style={styles.editButtonText}>Edit</Text>
-  </TouchableOpacity>
-</View>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Message</Text>
+          <Text style={styles.detailValue}>{profile.bio || 'Not set'}</Text>
+          <TouchableOpacity onPress={() => startEditing('bio')} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
 
       </View>
 
@@ -123,11 +122,11 @@ export default function ProfileScreen() {
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
             <TouchableOpacity
-  style={[styles.saveButton, styles.cancelButton]}
-  onPress={() => setModalVisible(false)}
->
-  <Text style={styles.saveButtonText}>Cancel</Text>
-</TouchableOpacity>
+              style={[styles.saveButton, styles.cancelButton]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.saveButtonText}>Cancel</Text>
+            </TouchableOpacity>
 
           </View>
         </View>
@@ -159,6 +158,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   placeholder: { backgroundColor: lightViolet },
+  changeImageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: lightViolet,
+  },
+  changeImageText: {
+    color: darkViolet,
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center',
+  },
   detailsContainer: {
     width: '100%',
     marginTop: 20,
@@ -204,20 +214,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   editButton: {
-  backgroundColor: darkViolet,
-  paddingVertical: 4,
-  paddingHorizontal: 12,
-  borderRadius: 6,
-},
-editButtonText: {
-  color: 'white',
-  fontWeight: '600',
-  fontSize: 14,
-},
-cancelButton: {
-  backgroundColor: '#ccc',
-  marginTop: 10,
-},
-
-
+    backgroundColor: darkViolet,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  editButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    marginTop: 10,
+  },
 });

@@ -13,7 +13,11 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
 function formatIso(date: Date) {
-  return date.toISOString().split('T')[0];
+  // Return local date string yyyy-mm-dd
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function formatDisplayDate(date: Date) {
@@ -102,7 +106,6 @@ export default function UndoneScreen() {
   return (
     <View style={styles.container}>
 
-      {/* Current Date display */}
       <Text style={styles.currentDate}>{formattedToday}</Text>
 
       <View style={styles.weekRow}>
