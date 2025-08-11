@@ -58,12 +58,27 @@ export default function AddHabitScreen(): JSX.Element {
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 60000); 
+    const interval = setInterval(async () => {
+      const now = new Date();
+      setCurrentDate(now);
+
+      
+      if (formatIso(now) !== formatIso(selectedDate)) {
+        setSelectedDate(now);
+
+       
+        const filtered = habits.filter(
+          h => h.date === formatIso(now) || h.status !== 'pending'
+        );
+        if (filtered.length !== habits.length) {
+          setHabits(filtered);
+          await saveHabits(filtered);
+        }
+      }
+    }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedDate, habits]);
 
   const persistAndSet = async (newList: Habit[]) => {
     setHabits(newList);
@@ -116,13 +131,10 @@ export default function AddHabitScreen(): JSX.Element {
   );
 
   const weekDays = getCurrentWeekDates();
-
   const formattedToday = formatDisplayDate(currentDate);
 
   return (
     <View style={styles.container}>
-
-      {/* Current Date display */}
       <Text style={styles.currentDate}>{formattedToday}</Text>
 
       <View style={styles.weekRow}>
@@ -196,11 +208,7 @@ const backgroundViolet = '#f3e5f5';
 const redColor = '#e53935';
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: backgroundViolet 
-  },
+  container: { flex: 1, padding: 20, backgroundColor: backgroundViolet },
   currentDate: {
     fontSize: 16,
     fontWeight: '600',
@@ -208,89 +216,53 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-  weekRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16 
-  },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
   dayBox: {
     alignItems: 'center',
     paddingVertical: 6,
     paddingHorizontal: 8,
     borderRadius: 8,
-    backgroundColor: '#e1bee7'
+    backgroundColor: '#e1bee7',
   },
-  daySelected: {
-    backgroundColor: darkViolet 
-  },
-  dayText: { 
-    fontSize: 12, 
-    color: darkViolet, 
-    fontWeight: 'bold' 
-  },
-  dateText: { 
-    fontSize: 14, 
-    color: darkViolet 
-  },
-  dayTextSelected: {
-    color: '#fff' 
-  },
-  title: { 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    marginBottom: 10, 
-    color: '#311b92' 
-  },
-  input: { 
-    borderWidth: 1, 
+  daySelected: { backgroundColor: darkViolet },
+  dayText: { fontSize: 12, color: darkViolet, fontWeight: 'bold' },
+  dateText: { fontSize: 14, color: darkViolet },
+  dayTextSelected: { color: '#fff' },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#311b92' },
+  input: {
+    borderWidth: 1,
     borderColor: lightViolet,
-    padding: 8, 
-    marginBottom: 10, 
-    borderRadius: 5, 
-    backgroundColor: '#fff', 
-    color: '#311b92' 
+    padding: 8,
+    marginBottom: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    color: '#311b92',
   },
-  addButton: { 
-    backgroundColor: darkViolet, 
-    paddingVertical: 10, 
-    borderRadius: 6, 
-    marginBottom: 20, 
-    alignItems: 'center' 
+  addButton: {
+    backgroundColor: darkViolet,
+    paddingVertical: 10,
+    borderRadius: 6,
+    marginBottom: 20,
+    alignItems: 'center',
   },
-  addButtonText: {
-    color: '#fff', 
-    fontWeight: 'bold', 
-    fontSize: 16 
+  addButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  empty: { textAlign: 'center', marginTop: 20, color: '#311b92' },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: lightViolet,
   },
-  empty: { 
-    textAlign: 'center', 
-    marginTop: 20,
-    color: '#311b92' 
+  habitText: { fontSize: 14, color: '#311b92', flex: 1 },
+  doneButton: {
+    backgroundColor: darkViolet,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
   },
-  item: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    paddingVertical: 10, 
-    borderBottomWidth: 1, 
-    borderColor: lightViolet 
-  },
-  habitText: { 
-    fontSize: 14, 
-    color: '#311b92', 
-    flex: 1
-  },
-  doneButton: { 
-    backgroundColor: darkViolet, 
-    paddingVertical: 6, 
-    paddingHorizontal: 10, 
-    borderRadius: 8 
-  },
-  doneButtonText: { 
-    color: '#fff', 
-    fontWeight: 'bold', 
-    fontSize: 13 
-  },
+  doneButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
   deleteAllButton: {
     backgroundColor: redColor,
     paddingVertical: 12,
@@ -298,9 +270,5 @@ const styles = StyleSheet.create({
     marginTop: 16,
     alignItems: 'center',
   },
-  deleteAllButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+  deleteAllButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });
